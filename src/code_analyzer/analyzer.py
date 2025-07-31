@@ -50,10 +50,16 @@ except ImportError:
         try:
             from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
         except ImportError:
-            print("Warning: AutoGen not available. Installing...")
-            import subprocess
-            subprocess.run(["pip", "install", "pyautogen"], check=True)
-            from autogen import AssistantAgent, UserProxyAgent
+            print("ERROR: AutoGen package is not installed.")
+            print("Please install it manually using one of the following commands:")
+            print("  pip install pyautogen")
+            print("  pip install pyautogen>=0.2.0")
+            print("\nAlternatively, you can install all dependencies using:")
+            print("  pip install -r requirements.txt")
+            print("\nThe analyzer will continue with basic analysis (no AI enhancement).")
+            # Set globals to None to indicate AutoGen is not available
+            AssistantAgent = None
+            UserProxyAgent = None
 
 
 @dataclass
@@ -208,6 +214,11 @@ class AutoGenCodeAnalysisAgent:
     def _setup_agents(self):
         """Set up AutoGen agents for code analysis."""
         try:
+            # Check if AutoGen classes are available
+            if AssistantAgent is None or UserProxyAgent is None:
+                self.autogen_available = False
+                return
+            
             # If AutoGen is available, use it
             if 'autogen' in globals() or any('autogen' in str(type(obj)) for obj in globals().values()):
                 self.user_proxy = UserProxyAgent(
