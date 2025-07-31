@@ -1,0 +1,7 @@
+include README.md
+include requirements.txt
+include config/.env.template
+recursive-include docs *.md
+recursive-include tests *.py
+global-exclude __pycache__
+global-exclude *.py[co]
